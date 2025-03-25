@@ -10,6 +10,7 @@ import { Input } from "../../components/ui/input"
 import { Label } from "../../components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../../components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../components/ui/tabs"
+import { emailLogin, signup } from "./actions"
 
 export function AuthForm() {
   const [showPassword, setShowPassword] = useState(false)
@@ -19,6 +20,8 @@ export function AuthForm() {
   }
 
   return (
+    <div className="w-full max-w-md mx-auto">
+
     <Card className="w-full shadow-lg">
       <CardHeader className="space-y-1">
         <CardTitle className="text-2xl font-bold text-center">Welcome</CardTitle>
@@ -64,7 +67,7 @@ export function AuthForm() {
                     </Button>
                   </div>
                 </div>
-                <Button type="submit" className="w-full" variant="default" size="default">
+                <Button type="submit" className="w-full" variant="default" size="default" formAction={emailLogin}>
                   Login
                 </Button>
               </div>
@@ -109,7 +112,7 @@ export function AuthForm() {
                     </Button>
                   </div>
                 </div>
-                <Button type="submit" className="w-full" variant="default" size="default">
+                <Button type="submit" className="w-full" variant="default" size="default" formAction={signup}>
                   Create Account
                 </Button>
               </div>
@@ -145,6 +148,7 @@ export function AuthForm() {
         </div>
       </CardFooter>
     </Card>
+    </div>
   )
 }
 
