@@ -1,13 +1,13 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { format } from "date-fns"
-import { CalendarIcon } from "lucide-react"
+import { useState } from "react";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
 
-import { Button } from "../components/ui/button"
-import { Calendar } from "../components/ui/calendar"
+import { Button } from "../components/ui/button";
+import { Calendar } from "../components/ui/calendar";
 import {
   Dialog,
   DialogContent,
@@ -15,41 +15,56 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "../components/ui/dialog"
-import { FormLabel } from "../components/ui/form"
-import { Input } from "../components/ui/input"
-import { Popover, PopoverContent, PopoverTrigger } from "../components/ui/popover"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select"
-import { Textarea } from "../components/ui/textarea"
-import { cn } from "../lib/utils"
+} from "../components/ui/dialog";
+import { FormLabel } from "../components/ui/form";
+import { Input } from "../components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "../components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../components/ui/select";
+import { Textarea } from "../components/ui/textarea";
+import { cn } from "../lib/utils";
 
 interface EventDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onAddEvent: (event: any) => void
-  selectedDate: Date
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onAddEvent: (event: any) => void;
+  selectedDate: Date;
 }
 
-export function EventDialog({ open, onOpenChange, onAddEvent, selectedDate }: EventDialogProps) {
-  const [date, setDate] = useState<Date>(selectedDate)
-  const [startTime, setStartTime] = useState<string>("09:00")
-  const [endTime, setEndTime] = useState<string>("10:00")
-  const [title, setTitle] = useState<string>("")
-  const [description, setDescription] = useState<string>("")
-  const [type, setType] = useState<string>("work")
+export function EventDialog({
+  open,
+  onOpenChange,
+  onAddEvent,
+  selectedDate,
+}: EventDialogProps) {
+  const [date, setDate] = useState<Date>(selectedDate);
+  const [startTime, setStartTime] = useState<string>("09:00");
+  const [endTime, setEndTime] = useState<string>("10:00");
+  const [title, setTitle] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [type, setType] = useState<string>("work");
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
 
     // Parse times to create Date objects
-    const [startHour, startMinute] = startTime.split(":").map(Number)
-    const [endHour, endMinute] = endTime.split(":").map(Number)
+    const [startHour, startMinute] = startTime.split(":").map(Number);
+    const [endHour, endMinute] = endTime.split(":").map(Number);
 
-    const startDateTime = new Date(date)
-    startDateTime.setHours(startHour, startMinute, 0)
+    const startDateTime = new Date(date);
+    startDateTime.setHours(startHour, startMinute, 0);
 
-    const endDateTime = new Date(date)
-    endDateTime.setHours(endHour, endMinute, 0)
+    const endDateTime = new Date(date);
+    endDateTime.setHours(endHour, endMinute, 0);
 
     onAddEvent({
       title,
@@ -58,30 +73,35 @@ export function EventDialog({ open, onOpenChange, onAddEvent, selectedDate }: Ev
       startTime: startDateTime,
       endTime: endDateTime,
       type,
-    })
+    });
 
     // Reset form
-    setTitle("")
-    setDescription("")
-    setStartTime("09:00")
-    setEndTime("10:00")
-    setType("work")
-  }
+    setTitle("");
+    setDescription("");
+    setStartTime("09:00");
+    setEndTime("10:00");
+    setType("work");
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader className={""}>
           <DialogTitle className={""}>Add New Event</DialogTitle>
-          <DialogDescription className={""}>Create a new event in your calendar.</DialogDescription>
+          <DialogDescription className={""}>
+            Create a new event in your calendar.
+          </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <FormLabel className={""} htmlFor="title">Event Title</FormLabel>
+              <FormLabel className={""} htmlFor="title">
+                Event Title
+              </FormLabel>
               <Input
-              className={""}
+                className=""
                 id="title"
+                type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Enter event title"
@@ -89,9 +109,11 @@ export function EventDialog({ open, onOpenChange, onAddEvent, selectedDate }: Ev
               />
             </div>
             <div className="grid gap-2">
-              <FormLabel className={""} htmlFor="description">Description</FormLabel>
+              <FormLabel className={""} htmlFor="description">
+                Description
+              </FormLabel>
               <Textarea
-              className={""}
+                className={""}
                 id="description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
@@ -105,7 +127,10 @@ export function EventDialog({ open, onOpenChange, onAddEvent, selectedDate }: Ev
                   <Button
                     size="default"
                     variant="outline"
-                    className={cn("justify-start text-left font-normal", !date && "text-muted-foreground")}
+                    className={cn(
+                      "justify-start text-left font-normal",
+                      !date && "text-muted-foreground"
+                    )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {date ? format(date, "PPP") : "Select date"}
@@ -125,8 +150,11 @@ export function EventDialog({ open, onOpenChange, onAddEvent, selectedDate }: Ev
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <FormLabel htmlFor="startTime">Start Time</FormLabel>
+                <FormLabel htmlFor="startTime" className={""}>
+                  Start Time
+                </FormLabel>
                 <Input
+                  className=""
                   id="startTime"
                   type="time"
                   value={startTime}
@@ -135,30 +163,38 @@ export function EventDialog({ open, onOpenChange, onAddEvent, selectedDate }: Ev
                 />
               </div>
               <div className="grid gap-2">
-                <FormLabel htmlFor="endTime">End Time</FormLabel>
-                <Input id="endTime" type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} required />
+                <FormLabel htmlFor="endTime" className={""}>
+                  End Time
+                </FormLabel>
+                <Input
+                  className=""
+                  id="endTime"
+                  type="time"
+                  value={endTime}
+                  onChange={(e) => setEndTime(e.target.value)}
+                  required
+                />
               </div>
             </div>
             <div className="grid gap-2">
-              <FormLabel htmlFor="type">Event Type</FormLabel>
+              <FormLabel htmlFor="type" className={""}>Event Type</FormLabel>
               <Select value={type} onValueChange={setType}>
-                <SelectTrigger>
+                <SelectTrigger className={""}>
                   <SelectValue placeholder="Select event type" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="work">Work</SelectItem>
-                  <SelectItem value="personal">Personal</SelectItem>
-                  <SelectItem value="health">Health</SelectItem>
+                <SelectContent className={""}>
+                  <SelectItem value="work" className={""}>Work</SelectItem>
+                  <SelectItem value="personal" className={""}>Personal</SelectItem>
+                  <SelectItem value="health" className={""}>Health</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
-          <DialogFooter>
-            <Button type="submit">Add Event</Button>
+          <DialogFooter className={""}>
+            <Button type="submit" className="" variant="default" size="default">Add Event</Button>
           </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
-

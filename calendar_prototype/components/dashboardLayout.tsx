@@ -1,253 +1,181 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { CalendarIcon, ChevronLeft, ChevronRight, Clock, Plus } from "lucide-react"
-import { format, addDays, startOfToday, isSameDay, addHours, isAfter, isBefore } from "date-fns"
+import type React from "react";
 
-import { cn } from "../lib/utils"
-import { Button } from "../components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card"
-import { Calendar } from "../components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "../components/ui/popover"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs"
-import { Badge } from "../components/ui/badge"
-import { HourlyTimeline } from "./hourlyTimeline"
-import { EventDialog } from "./eventDialog"
+import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  Calendar,
+  Clock,
+  Home,
+  Menu,
+  Moon,
+  Plus,
+  Settings,
+  Sun,
+  User,
+} from "lucide-react";
 
-// Sample events data - in a real app, this would come from a database
-const SAMPLE_EVENTS = [
-  {
-    id: "1",
-    title: "Team Meeting",
-    description: "Weekly team sync",
-    date: addDays(startOfToday(), 0),
-    startTime: addHours(startOfToday(), 10),
-    endTime: addHours(startOfToday(), 11),
-    type: "work",
-  },
-  {
-    id: "2",
-    title: "Lunch with Sarah",
-    description: "Discuss project collaboration",
-    date: addDays(startOfToday(), 0),
-    startTime: addHours(startOfToday(), 12),
-    endTime: addHours(startOfToday(), 13),
-    type: "personal",
-  },
-  {
-    id: "3",
-    title: "Client Call",
-    description: "Quarterly review",
-    date: addDays(startOfToday(), 0),
-    startTime: addHours(startOfToday(), 14),
-    endTime: addHours(startOfToday(), 15),
-    type: "work",
-  },
-  {
-    id: "4",
-    title: "Dentist Appointment",
-    description: "Regular checkup",
-    date: addDays(startOfToday(), 1),
-    startTime: addHours(addDays(startOfToday(), 1), 9),
-    endTime: addHours(addDays(startOfToday(), 1), 10),
-    type: "health",
-  },
-  {
-    id: "5",
-    title: "Project Deadline",
-    description: "Submit final deliverables",
-    date: addDays(startOfToday(), 2),
-    startTime: addHours(addDays(startOfToday(), 2), 17),
-    endTime: addHours(addDays(startOfToday(), 2), 18),
-    type: "work",
-  },
-]
+import { cn } from "../lib/utils";
+import { Button } from "../components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "../components/ui/sheet";
+import { useTheme } from "next-themes";
 
-export function CalendarDashboard() {
-  const [date, setDate] = useState<Date>(new Date())
-  const [events, setEvents] = useState(SAMPLE_EVENTS)
-  const [isEventDialogOpen, setIsEventDialogOpen] = useState(false)
+export function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const { setTheme, theme } = useTheme();
+  const [open, setOpen] = useState(false);
 
-  // Filter events for the selected date
-  const eventsForSelectedDate = events.filter((event) => isSameDay(event.date, date))
-
-  // Get upcoming events (events in the next 24 hours)
-  const now = new Date()
-  const upcomingEvents = events
-    .filter((event) => isAfter(event.startTime, now) && isBefore(event.startTime, addHours(now, 24)))
-    .sort((a, b) => a.startTime.getTime() - b.startTime.getTime())
-
-  // Function to handle adding a new event
-  const handleAddEvent = (newEvent: any) => {
-    setEvents([...events, { id: String(events.length + 1), ...newEvent }])
-    setIsEventDialogOpen(false)
-  }
+  const routes = [
+    {
+      href: "/dashboard",
+      label: "Dashboard",
+      icon: Home,
+      active: pathname === "/dashboard",
+    },
+    {
+      href: "/dashboard/calendar",
+      label: "Calendar",
+      icon: Calendar,
+      active: pathname === "/dashboard/calendar",
+    },
+    {
+      href: "/dashboard/reminders",
+      label: "Reminders",
+      icon: Clock,
+      active: pathname === "/dashboard/reminders",
+    },
+    {
+      href: "/dashboard/profile",
+      label: "Profile",
+      icon: User,
+      active: pathname === "/dashboard/profile",
+    },
+    {
+      href: "/dashboard/settings",
+      label: "Settings",
+      icon: Settings,
+      active: pathname === "/dashboard/settings",
+    },
+  ];
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-col gap-4 md:flex-row">
-        <Card className="flex-1">
-          <CardHeader className="">
-            <div className="flex items-center justify-between">
-              <CardTitle className="">Calendar</CardTitle>
-              <div className="flex items-center gap-2">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button variant="outline" size="sm" className="h-8 gap-1">
-                      <CalendarIcon className="h-4 w-4" />
-                      <span>{format(date, "PPP")}</span>
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={date}
-                      onSelect={(newDate) => newDate && setDate(newDate)}
-                      initialFocus
-                      className=""
-                      classNames={{}}
-                    />
-                  </PopoverContent>
-                </Popover>
-                <Button size="sm" variant="ghost" className="h-8 w-8 p-0" onClick={() => setDate(addDays(date, -1))}>
-                  <ChevronLeft className="h-4 w-4" />
-                  <span className="sr-only">Previous day</span>
-                </Button>
-                <Button size="sm" variant="ghost" className="h-8 w-8 p-0" onClick={() => setDate(addDays(date, 1))}>
-                  <ChevronRight className="h-4 w-4" />
-                  <span className="sr-only">Next day</span>
-                </Button>
-              </div>
+    <div className="flex min-h-screen w-full bg-background">
+      {/* Mobile Navigation */}
+      <Sheet open={open} onOpenChange={setOpen}>
+        <SheetTrigger asChild className="lg:hidden">
+          <Button
+            variant="outline"
+            size="icon"
+            className="absolute left-4 top-4 z-50"
+          >
+            <Menu className="h-5 w-5" />
+            <span className="sr-only">Toggle Menu</span>
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="left" className="w-64 p-0">
+          <div className="flex h-full flex-col">
+            <div className="px-6 py-6">
+              <h2 className="text-lg font-semibold">Calendar Dashboard</h2>
             </div>
-            <CardDescription className="">Manage your schedule and upcoming events</CardDescription>
-          </CardHeader>
-          <CardContent className="">
-            <Tabs defaultValue="day" className="">
-              <TabsList className="mb-4">
-                <TabsTrigger value="day" className="">Day</TabsTrigger>
-                <TabsTrigger value="week" className={""}>Week</TabsTrigger>
-                <TabsTrigger value="month" className={""}>Month</TabsTrigger>
-              </TabsList>
-              <TabsContent value="day" className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-medium">{format(date, "EEEE, MMMM d")}</h3>
-                  <Button size="sm" variant="default" className="" onClick={() => setIsEventDialogOpen(true)}>
-                    <Plus className="h-4 w-4 mr-1" />
-                    Add Event
-                  </Button>
-                </div>
-
-                {eventsForSelectedDate.length > 0 ? (
-                  <div className="space-y-2">
-                    {eventsForSelectedDate.map((event) => (
-                      <div
-                        key={event.id}
-                        className={cn(
-                          "p-3 rounded-lg border",
-                          event.type === "work" &&
-                            "border-blue-200 bg-blue-50 dark:border-blue-900 dark:bg-blue-950/50",
-                          event.type === "personal" &&
-                            "border-purple-200 bg-purple-50 dark:border-purple-900 dark:bg-purple-950/50",
-                          event.type === "health" &&
-                            "border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950/50",
-                        )}
-                      >
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <h4 className="font-medium">{event.title}</h4>
-                            <p className="text-sm text-muted-foreground">{event.description}</p>
-                          </div>
-                          <Badge variant="outline" className="">
-                            {format(event.startTime, "h:mm a")} - {format(event.endTime, "h:mm a")}
-                          </Badge>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+            <div className="flex-1">
+              <nav className="grid gap-1 px-2">
+                {routes.map((route) => (
+                  <Link
+                    key={route.href}
+                    href={route.href}
+                    onClick={() => setOpen(false)}
+                    className={cn(
+                      "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium",
+                      route.active
+                        ? "bg-primary text-primary-foreground"
+                        : "hover:bg-muted"
+                    )}
+                  >
+                    <route.icon className="h-5 w-5" />
+                    {route.label}
+                  </Link>
+                ))}
+              </nav>
+            </div>
+            <div className="p-4">
+              <Button
+                variant="outline"
+                size="icon"
+                className="ml-auto"
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              >
+                {theme === "dark" ? (
+                  <Sun className="h-5 w-5" />
                 ) : (
-                  <div className="flex flex-col items-center justify-center py-12 text-center">
-                    <CalendarIcon className="h-12 w-12 text-muted-foreground/50 mb-4" />
-                    <h3 className="text-lg font-medium">No events scheduled</h3>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Click the "Add Event" button to create a new event.
-                    </p>
-                  </div>
+                  <Moon className="h-5 w-5" />
                 )}
-              </TabsContent>
-              <TabsContent value="week" className={""}>
-                <div className="text-center py-12 text-muted-foreground">Week view would be implemented here</div>
-              </TabsContent>
-              <TabsContent value="month" className={""}>
-                <div className="text-center py-12 text-muted-foreground">Month view would be implemented here</div>
-              </TabsContent>
-            </Tabs>
-          </CardContent>
-        </Card>
+                <span className="sr-only">Toggle theme</span>
+              </Button>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
 
-        <div className="flex flex-col gap-4 md:w-80">
-          <Card className="">
-            <CardHeader className="">
-              <CardTitle className="flex items-center">
-                <Clock className="h-5 w-5 mr-2" />
-                Upcoming Reminders
-              </CardTitle>
-              <CardDescription className="">Events in the next 24 hours</CardDescription>
-            </CardHeader>
-            <CardContent className="">
-              {upcomingEvents.length > 0 ? (
-                <div className="space-y-2">
-                  {upcomingEvents.map((event) => (
-                    <div
-                      key={event.id}
-                      className={cn(
-                        "p-3 rounded-lg border",
-                        event.type === "work" && "border-blue-200 bg-blue-50 dark:border-blue-900 dark:bg-blue-950/50",
-                        event.type === "personal" &&
-                          "border-purple-200 bg-purple-50 dark:border-purple-900 dark:bg-purple-950/50",
-                        event.type === "health" &&
-                          "border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950/50",
-                      )}
-                    >
-                      <div className="space-y-1">
-                        <div className="flex justify-between items-center">
-                          <h4 className="font-medium">{event.title}</h4>
-                          <Badge variant="outline" className="text-xs">
-                            {format(event.startTime, "h:mm a")}
-                          </Badge>
-                        </div>
-                        <p className="text-xs text-muted-foreground">{format(event.date, "EEE, MMM d")}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+      {/* Desktop Sidebar */}
+      <div className="hidden border-r bg-muted/40 lg:block lg:w-64">
+        <div className="flex h-full flex-col">
+          <div className="px-6 py-6">
+            <h2 className="text-lg font-semibold">Calendar Dashboard</h2>
+          </div>
+          <div className="flex-1">
+            <nav className="grid gap-1 px-2">
+              {routes.map((route) => (
+                <Link
+                  key={route.href}
+                  href={route.href}
+                  className={cn(
+                    "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium",
+                    route.active
+                      ? "bg-primary text-primary-foreground"
+                      : "hover:bg-muted"
+                  )}
+                >
+                  <route.icon className="h-5 w-5" />
+                  {route.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+          <div className="p-4">
+            <Button
+              variant="outline"
+              size="icon"
+              className="ml-auto"
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            >
+              {theme === "dark" ? (
+                <Sun className="h-5 w-5" />
               ) : (
-                <div className="flex flex-col items-center justify-center py-8 text-center">
-                  <Clock className="h-8 w-8 text-muted-foreground/50 mb-2" />
-                  <p className="text-sm text-muted-foreground">No upcoming events in the next 24 hours</p>
-                </div>
+                <Moon className="h-5 w-5" />
               )}
-            </CardContent>
-          </Card>
-
-          <Card className="">
-            <CardHeader className="">
-              <CardTitle className="">Today's Timeline</CardTitle>
-              <CardDescription className={""}>Hourly breakdown of your day</CardDescription>
-            </CardHeader>
-            <CardContent className={""}>
-              <HourlyTimeline events={eventsForSelectedDate} />
-            </CardContent>
-          </Card>
+              <span className="sr-only">Toggle theme</span>
+            </Button>
+          </div>
         </div>
       </div>
 
-      <EventDialog
-        open={isEventDialogOpen}
-        onOpenChange={setIsEventDialogOpen}
-        onAddEvent={handleAddEvent}
-        selectedDate={date}
-      />
+      {/* Main Content */}
+      <div className="flex flex-1 flex-col">
+        <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background px-6">
+          <div className="flex flex-1 items-center gap-4">
+            <h1 className="text-xl font-semibold">Calendar Dashboard</h1>
+          </div>
+          <div className="flex items-center gap-4">
+            <Button variant="default" size="sm" className="h-8 gap-1">
+              <Plus className="h-4 w-4" />
+              <span>Add Event</span>
+            </Button>
+          </div>
+        </header>
+        <main className="flex-1 overflow-auto p-4 md:p-6">{children}</main>
+      </div>
     </div>
-  )
+  );
 }
-
