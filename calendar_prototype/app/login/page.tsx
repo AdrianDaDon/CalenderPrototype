@@ -43,8 +43,6 @@ export function AuthForm() {
     setShowPassword(!showPassword);
   };
 
-  const handleLoginAction = () => {};
-
   return (
     <div className="w-full max-w-md mx-auto">
       <Card className="w-full shadow-lg">
@@ -138,11 +136,11 @@ export function AuthForm() {
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="first-name" className="">
+                      <Label htmlFor="name" className="">
                         First name
                       </Label>
                       <Input
-                        id="first-name"
+                        id="name"
                         className=""
                         type="text"
                         placeholder="John"
@@ -150,11 +148,11 @@ export function AuthForm() {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="last-name" className="">
+                      <Label htmlFor="surname" className="">
                         Last name
                       </Label>
                       <Input
-                        id="last-name"
+                        id="surname"
                         type="text"
                         placeholder="Doe"
                         required
@@ -163,11 +161,11 @@ export function AuthForm() {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="email-signup" className={""}>
+                    <Label htmlFor="email" className={""}>
                       Email
                     </Label>
                     <Input
-                      id="email-signup"
+                      id="email"
                       className={""}
                       type="email"
                       placeholder="your@email.com"
@@ -175,12 +173,12 @@ export function AuthForm() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="password-signup" className={""}>
+                    <Label htmlFor="password" className={""}>
                       Password
                     </Label>
                     <div className="relative">
                       <Input
-                        id="password-signup"
+                        id="password"
                         type={showPassword ? "text" : "password"}
                         placeholder="••••••••"
                         required
