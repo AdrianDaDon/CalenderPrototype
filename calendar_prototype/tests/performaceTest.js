@@ -1,8 +1,9 @@
 import http from 'k6/http';
 import { sleep, check } from 'k6';
 
-const BASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL; // supabase url
-const API_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY; // supabase anon api key
+const BASE_URL = "https://odbwammbspfwnilxonnd.supabase.co";
+const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9kYndhbW1ic3Bmd25pbHhvbm5kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI4OTM4NjgsImV4cCI6MjA1ODQ2OTg2OH0.ki60Q1E7PrIt2cw2jVWzC4obSneq9wj-V41kubl_pZE";
+
 
 export let options = {
   stages: [
